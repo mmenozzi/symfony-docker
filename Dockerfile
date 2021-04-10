@@ -110,6 +110,16 @@ VOLUME /srv/app/var
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
 
+FROM symfony_php AS symfony_php_dev
+
+RUN apk add --no-cache su-exec
+
+RUN ln -sf $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
+COPY docker/php/conf.d/symfony.dev.ini $PHP_INI_DIR/conf.d/symfony.ini
+
+COPY docker/php/docker-entrypoint-dev.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
 FROM caddy:${CADDY_VERSION}-builder-alpine AS symfony_caddy_builder
 
 RUN xcaddy build \
